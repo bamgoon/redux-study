@@ -27,4 +27,4 @@ const mock = {
   data: InterviewerList_Data,
 };
 
-export { mock };
+export default mock;

@@ -1,53 +1,20 @@
 import axios from "axios";
-
-const getUserInfo = async (evalId, recruitId) => {
-  const response = await axios.get("/eval", {
-    params: {
-      evalId,
-      recruitId,
-    },
-  });
+import j from "utils/jwtUtils";
+const signup = async (params) => {
+  const response = await axios.post("/api/auth/signup", params);
 
   return response.data;
 };
 
-const updatePw = (evalId, params) => {
-  // console.log('updatePw', evalName, evalId, evalPw);
-  return axios.patch(`/auth/${evalId}`, params);
-};
+const signin = async (params) => {
+  const response = await axios.post("/api/auth/signin", params);
 
-const login = (evalId, evalPw) => {
-  return axios.post("/auth/login", {
-    evalId,
-    evalPw,
-  });
-};
-
-const logout = () => {
-  localStorage.removeItem("evalInfo");
-};
-
-const refresh = async (refreshToken) => {
-  const res = await axios.post("/auth/refresh", {
-    token: refreshToken,
-  });
-  localStorage.setItem("evalInfo", JSON.stringify(res.data));
-  return res.data;
-};
-
-const getProfile = async () => {
-  const res = await axios.get("/auth/profile");
-
-  return res.data;
+  return response;
 };
 
 const loginApi = {
-  getUserInfo,
-  updatePw,
-  login,
-  logout,
-  refresh,
-  getProfile,
+  signup,
+  signin,
 };
 
 export default loginApi;

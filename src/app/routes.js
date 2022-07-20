@@ -1,9 +1,13 @@
-import { MainForm, Login, Interviewer, Interviewee } from "../pages";
+import { MainForm, Signup, Login, Interviewer, Interviewee } from "pages";
 
 const routes = [
   {
     path: "/",
     component: MainForm,
+  },
+  {
+    path: "/signup",
+    component: Signup,
   },
   {
     path: "/:recruitId/:userId",

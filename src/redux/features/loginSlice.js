@@ -1,63 +1,47 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-import { mock as interviewer_mock } from "../features/interviewer_mock";
+import loginApi from "services/loginApi";
 
 const initialState = {
-  getUserInfo: "INIT",
-  userInfo: null,
-  error: null,
+  loading: false,
+  isLoggedIn: false,
+  isError: false,
+  name: "null",
+  role: null,
 };
 
-export const onloadLoginRequest = (id, psw) => async (dispatch) => {
-  dispatch(getUserState());
-  try {
-    // const response = await axios.get("/api/login", {
-    //   params: { id, psw },
-    // });
-    const response = interviewer_mock;
-    // 응답 출력 => 나중에 삭제
-    console.log("response");
-    console.log(response);
-    dispatch(getUserStateSuccess(response.data.data));
-  } catch (error) {
-    // 에러 출력 => 나중에 삭제
-    console.log("error");
-    console.log(error);
-    dispatch(getUserStateFailure(error.response.data));
+export const login = createAsyncThunk(
+  "/auth/login",
+  async ({ params }, thunkAPI) => {
+    const response = await loginApi.login(params);
+    return response.data;
   }
-};
+);
 
-const loginSlice = createSlice({
-  name: "login",
+export const loginSlice = createSlice({
+  name: "user",
+
   initialState,
-  reducers: {
-    getUserState: (state) => {
-      console.log("대기");
-      return {
-        ...state,
-        getUserInfo: "WAITING",
-      };
-    },
-    getUserStateSuccess: (state, action) => {
-      console.log("성공");
-      return {
-        ...state,
-        getUserInfo: "SUCCESS",
-        ...action.payload,
-      };
-    },
-    getUserStateFailure: (state, action) => {
-      console.log("실패");
-      return {
-        ...state,
-        getUserInfo: "FAILURE",
-        ...action.payload,
-      };
-    },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(login.pending, (state) => {
+      state.loading = true;
+      console.log("pending");
+    });
+    builder.addCase(login.fulfilled, (state, action) => {
+      state.loading = false;
+      state.isLoggedIn = true;
+      state.isError = false;
+      state.name = action.payload?.name;
+      state.role = action.payload?.role;
+      console.log("fulfilled");
+    });
+    builder.addCase(login.rejected, (state, action) => {
+      state.isLoggedIn = false;
+      state.isError = true;
+      console.log("rejected");
+    });
   },
 });
 
-export const { getUserState, getUserStateSuccess, getUserStateFailure } =
-  loginSlice.actions;
-
-export default loginSlice.reducer;
+export const loginReducer = loginSlice.reducer;
